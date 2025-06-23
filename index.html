@@ -1,30 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XnFire</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-
-        #message {
-            font-size: 18px;
-            color: #333;
-        }
-    </style>
-</head>
-<body>
-    <div id="message"><!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>XnFire Enhanced - Fixed Collision</title>
@@ -97,7 +73,7 @@
         }
         #controls-info {
             position: absolute;
-            top: 10px;
+            top: 50px;
             left: 10px;
             background: rgba(0, 0, 0, 0.7);
             color: white;
@@ -109,9 +85,27 @@
         .performance-good { color: #00ff00; }
         .performance-warning { color: #ffff00; }
         .performance-bad { color: #ff0000; }
+        #fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        #fullscreen-btn:hover {
+            background: rgba(50, 50, 50, 0.7);
+        }
     </style>
 </head>
 <body>
+    <button id="fullscreen-btn">Fullscreen</button>
     <div class="crosshair"></div>
     <div id="joystick"></div>
     <div id="runButton">RUN</div>
@@ -141,6 +135,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
 
     <script>
+        // Fullscreen button functionality
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        fullscreenBtn.addEventListener('click', toggleFullscreen);
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+                fullscreenBtn.textContent = 'Exit Fullscreen';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    fullscreenBtn.textContent = 'Fullscreen';
+                }
+            }
+        }
+        
+        // Listen for fullscreen change events
+        document.addEventListener('fullscreenchange', () => {
+            fullscreenBtn.textContent = document.fullscreenElement ? 'Exit Fullscreen' : 'Fullscreen';
+        });
+
         // Scene setup
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x87CEEB);
@@ -322,8 +339,8 @@
                 this.maxWalkableSlope = 35;
                 
                 // Collision optimization settings
-                this.collisionRange = 1.5; // meters around character
-                this.collisionRanges = [ 5, 10, 15, 20, 30]; // Available ranges
+                this.collisionRange = 10; // meters around character
+                this.collisionRanges = [5, 10, 15, 20, 30]; // Available ranges
                 this.currentRangeIndex = 1; // Default to 10m
                 this.lastCharacterPosition = new THREE.Vector3();
                 this.updateThreshold = 1.0; // Update collision when character moves this distance
@@ -1229,36 +1246,7 @@
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth / window.innerHeight);
-        });
-    </script>
-</body>
-</html>
-        </div>
-
-    <script>
-        function requestFullscreen() {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.warn(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                });
-            } else if (document.documentElement.webkitRequestFullscreen) { // Safari
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) { // IE11
-                document.documentElement.msRequestFullscreen();
-            }
-        }
-
-        // Attempt to enter fullscreen on page load
-        window.onload = () => {
-            requestFullscreen();
-        };
-
-        // Alternative: Ask user to click if fullscreen is blocked by the browser
-        document.body.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                requestFullscreen();
-            }
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
